@@ -1,0 +1,16 @@
+{
+  "appenders":{
+    "Logs":{
+      "type" : "dateFile",
+      "filename" : "logs/app",
+      "pattern" : "-yyyy-MM-dd.log",
+      "alwaysIncludePattern" : true,
+      "category" : "app"
+    },
+    "console":{"type" : "console"}
+  },
+  "categories":{
+    "Log":{"appenders":["Logs"],"level":"error"},
+    "default":{"appenders":["console"],"level":"trace"}
+  }
+}
