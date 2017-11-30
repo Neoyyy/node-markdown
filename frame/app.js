@@ -16,25 +16,15 @@ var app = express();
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(logger('dev'));
+//app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+//app.set('view engine', 'pug');
 
 app.use('/', index);
 
-app.use('/login',function (req,res,next) {
-    var data = JSON.parse(req.param("data"));
-    loginService.login(data,function (loginResult) {
-        if (loginResult.code == 200){
-          res.send('login success');
-        }else{
-          res.send('login failed,err:'+loginResult.message);
-        }
-    })
-
-})
 
 
 //加载路由
@@ -52,7 +42,7 @@ app.use(function(req, res, next) {
   err.status = 404;
   next(err);
 });
-
+/*
 // error handler
 app.use(function(err, req, res, next) {
   // set locals, only providing error in development
@@ -61,7 +51,7 @@ app.use(function(err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  //res.render('error');
 });
-
+*/
 module.exports = app;
