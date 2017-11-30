@@ -7,6 +7,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 var index = require('../routes/index');
+var loginService = require('../service/userservice');
 
 
 var app = express();
@@ -22,6 +23,19 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
+
+app.use('/login',function (req,res,next) {
+    var data = JSON.parse(req.param("data"));
+    loginService.login(data,function (loginResult) {
+        if (loginResult.code == 200){
+          res.send('login success');
+        }else{
+          res.send('login failed,err:'+loginResult.message);
+        }
+    })
+
+})
+
 
 //加载路由
 var routerfiles = fs.readdirSync('./routes/');
