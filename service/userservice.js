@@ -6,7 +6,7 @@ var responseutil = require('../util/webresponse');
 function register(req, callback){
     var userentity = JSON.parse(JSON.stringify(req.body))
 
-    logger.info('register post data:'+JSON.stringify(req.body));
+
     user.find({email:userentity.email},function (err,docs) {
         if (err){
             logger.error('register err:'+err);
@@ -35,8 +35,6 @@ function register(req, callback){
 
 function login(req, callback) {
     var userentity = JSON.parse(JSON.stringify(req.body))
-
-    logger.info('login post data:'+JSON.stringify(req.body));
 
 
     logger.info("查询doc,email:"+userentity.email)
