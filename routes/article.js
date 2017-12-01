@@ -19,10 +19,10 @@ router.route("/createarticle")
         });
     });
 
-router.route('/delete/:articleid')
-    .get(function (req,res) {
-        logger.info('delete article id:'+req.params.articleid);
-        articleservice.deleteArticle(req,function (callback) {
+router.route('/update')
+    .post(function (req,res) {
+        logger.info('update article id:'+JSON.parse(JSON.stringify(req.body)).articleid);
+        articleservice.updateArticle(req,function (callback) {
 
         })
 

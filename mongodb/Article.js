@@ -13,7 +13,7 @@ var articleSchema = new Schema({
 
 
 
-var articleModel = mongoose.model('User',userSchema);
+var articleModel = mongoose.model('Articles',articleSchema);
 
 
 module.exports = {

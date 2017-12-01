@@ -61,6 +61,15 @@ function deleteArticle(req, callback) {
 
 function updateArticle(req, callback) {
     var articleentity = JSON.parse(JSON.stringify(req.body));
+    article.update({articleid:articleentity.articleid},articleentity,function (err) {
+        if (err){
+            logger.error('update article ' + articleentity.articleid +'failed :'+err);
+        }
+        logger.info('update article ' + articleentity +'success');
+        logger.info('update article ' + JSON.stringify(req.body) +'success');
+
+
+    })
 
 }
 
@@ -73,5 +82,6 @@ function exportAs(req, res) {
 module.exports ={
     getArticleList,
     createArticle,
-    deleteArticle
+    deleteArticle,
+    updateArticle
 }
