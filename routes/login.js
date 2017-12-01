@@ -5,23 +5,23 @@ var loginService = require('../service/userservice');
 
 router.route('/login').post(function (req,res) {
 
-    var data = JSON.parse(JSON.stringify(req.body))
-
-    logger.info('post data:'+data);
-
-
-
-
-    loginService.login(data,function (loginResult) {
-        if (loginResult.code == 200){
+    loginService.login(req,function (loginResult) {
             res.send(loginResult.message);
-        }else{
-            res.send(loginResult.message);
-        }
     })
 
 
-})
+});
+
+
+
+router.route('/register').post(function (req,res) {
+
+    loginService.register(req,function (loginResult) {
+            res.send(loginResult.message);
+    })
+
+
+});
 
 
 module.exports = router;
