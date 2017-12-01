@@ -4,15 +4,14 @@ var logger = require('../frame/log/logger');
 var loginService = require('../service/userservice');
 
 router.route('/login').post(function (req,res) {
-    //console.log('data'+JSON.parse(req.body));
-    var data = JSON.parse(req.params("data"))
-    //var data = req.body;
-    //logger.info('login data:'+data);
-    console.log('post data:'+data);
-    //console.log('post data:'+data);
 
-    //res.send(req.body)
-    /*
+    var data = JSON.parse(JSON.stringify(req.body))
+
+    logger.info('post data:'+data);
+
+
+
+
     loginService.login(data,function (loginResult) {
         if (loginResult.code == 200){
             res.send(loginResult.message);
@@ -20,7 +19,7 @@ router.route('/login').post(function (req,res) {
             res.send(loginResult.message);
         }
     })
-    */
+
 
 })
 
