@@ -1,24 +1,77 @@
 var logger = require('../frame/log/logger');
-var user = require('../mongodb/article').articleModel;
+var article = require('../mongodb/article').articleModel;
 var responseutil = require('../util/webresponse');
 var counter = require('../mongodb/counter');
 
-function getArticleList(res, res) {
+function getArticleList(req, res) {
+
+
+    var articleentity = JSON.parse(JSON.stringify(req.body));
+    var query = {};
+
+    article.find({"$or":[{"owneremail":articleentity.email},{"ownerip":req.ip}]},function (err,docs) {
+        if (err){
+            logger.error("article search err:"+err);
+        }
+        logger.info('find???');
+        var result = [];
+
+        docs.forEach(function (ele) {
+            resultArticle = {};
+            resultArticle.articleid = ele.articleid;
+            resultArticle.title = ele.title;
+            resultArticle.owneremail = ele.owneremail;
+            resultArticle.time = ele.time;
+            result.push(resultArticle);
+        });
+
+        logger.info('the result article:'+JSON.stringify(result));
+        res.send(result);
+    })
 
 }
 
-function createArticle(res, callback) {
+
+function createArticle(req, callback) {
+    var articleentity = JSON.parse(JSON.stringify(req.body));
+    //todo articleid改为自增
+    article.create({articleid:articleentity.articleid,
+                    title:articleentity.title,
+                    ownerip:req.ip,
+                    owneremail:articleentity.owneremail,
+                    content:articleentity.content,
+                    time:new Date()},function (err,doc) {
+        if (err){
+            logger.error('create article error:'+err);
+        }
+        logger.info('create article ' + doc + 'success');
+    })
 
 }
 
-function deleteArticle(res, callback) {
+function deleteArticle(req, callback) {
+    var articleid = req.params.articleid;
+    article.remove({articleid:articleid},function (err) {
+        if (err){
+            logger.error('delete article ' + articleid +'failed :'+err);
+        }
+        logger.info('delete article ' + articleid +' success');
+    })
+}
+
+function updateArticle(req, callback) {
+    var articleentity = JSON.parse(JSON.stringify(req.body));
 
 }
 
-function updateArticle(res, callback) {
+function exportAs(req, res) {
     
 }
 
-function exportAs(res, res) {
-    
+
+
+module.exports ={
+    getArticleList,
+    createArticle,
+    deleteArticle
 }
