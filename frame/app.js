@@ -9,7 +9,7 @@ var bodyParser = require('body-parser');
 var index = require('../routes/index');
 var loginService = require('../service/userservice');
 
-var nodepandoc = require('node-pandoc');
+var pandoc = require('node-pandoc');
 var { readable } = require('stream');
 
 
@@ -31,28 +31,37 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', index);
 
 
-app.get('/down',function (req,res) {
+app.post('/down',function (req,res) {
 
+    logger.info('post to down');
 
-  var src = '<h1>Hello</h1><p>It&rsquo;s bananas</p>';
-      // Arguments in either a single String or as an Array:
-  var args = '-f html -t docx -o word.docx';
+    src = '# Hello \n\nIt\'s bananas',
+        // Arguments in either a single String or as an Array:
+        args = '-f markdown -t html';
 
-  var calll = function(err,result,res){
+// Set your callback function
+    callback = function (err, result) {
+        if (err) console.error('Oh Nos: ',err);
+        // Without the -o arg, the converted value will be returned.
+        return console.log(result), result;
+    };
 
-    logger.info('convert result :'+result);
-      var stats = result.size;
-      res.set({
-          'Content-Type': 'application/octet-stream',
-          'Content-Disposition': 'attachment; filename=think-php.pdf',
-          'Content-Length': stats.size
-      });
+// Call pandoc
+    pandoc(src, args, callback);
+
+      /*res.set({
+        'Content-Type': 'application/octet-stream',
+        'Content-Disposition': 'attachment; filename=think-php.pdf',
+        'Content-Length': stats.size
+    });
+
     var instream = new readable();
-    instream.push(result);
-    instream.push(null);
-    instream.pipe(res);
-  };
-    nodepandoc(src,args,calll);
+  instream.push(result);
+  instream.push(null);
+  instream.pipe(res);
+  */
+
+
 
 })
 

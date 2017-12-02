@@ -36,7 +36,7 @@ function register(req, callback){
 function login(req, callback) {
     var userentity = JSON.parse(JSON.stringify(req.body))
 
-
+//TODO 字段无会抛异常
     logger.info("查询doc,email:"+userentity.email)
     user.findOne({email:userentity.email},function(err,doc){
         if (err){
