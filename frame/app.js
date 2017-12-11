@@ -11,7 +11,7 @@ var loginService = require('../service/userservice');
 
 var pandoc = require('node-pandoc');
 var { readable } = require('stream');
-
+var marked = require('marked')
 
 
 
@@ -31,42 +31,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', index);
 
 
-app.post('/down',function (req,res) {
 
-    logger.info('post to down');
-
-    src = '# Hello \n\nIt\'s bananas',
-        // Arguments in either a single String or as an Array:
-        args = '-f markdown -t html';
-
-// Set your callback function
-    callback = function (err, result) {
-        if (err) console.error('Oh Nos: ',err);
-        // Without the -o arg, the converted value will be returned.
-        return console.log(result), result;
-    };
-
-// Call pandoc
-    pandoc(src, args, callback);
-
-      /*res.set({
-        'Content-Type': 'application/octet-stream',
-        'Content-Disposition': 'attachment; filename=think-php.pdf',
-        'Content-Length': stats.size
-    });
-
-    var instream = new readable();
-  instream.push(result);
-  instream.push(null);
-  instream.pipe(res);
-  */
-
-
-
-})
-
-
-
+app.post('/convert',function (req,res) {
+    var data = JSON.parse(JSON.stringify(req.body)).msg;
+    logger.info('data:'+data);
+});
 
 
 

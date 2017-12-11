@@ -30,6 +30,7 @@ router.route('/article/update/:articleid')
 
 router.route('/article/share/:articleid')
     .get(function (req,res) {
+    var articleid = req.params.articleid;
 
     });
 
