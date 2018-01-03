@@ -17,7 +17,7 @@ function register(req, callback){
             callback(responseutil.createResult(300,'user exist'));
 
         }else{
-            user.create({ username:userentity.username, password:userentity.password, email:userentity.email}, function(error,doc){
+            user.create({ user_name:userentity.username, password:userentity.password, email:userentity.email}, function(error,doc){
                 if(error) {
                     logger.error('create user error:'+error);
                     callback(responseutil.createResult(300,'create user error'));

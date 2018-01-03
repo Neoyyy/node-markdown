@@ -16,3 +16,17 @@ router.route("/contact/deleteContact/:contactId")
 
     });
 
+router.route("/sortContact")
+    .post(function (req, res) {
+        
+    });
+
+router.route("/contact/joinGroup")
+    .post(function (req, res) {
+        
+    })
+
+router.route("/leaveGroup")
+    .post(function (req, res) {
+        
+    })

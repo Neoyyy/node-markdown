@@ -4,7 +4,7 @@ var logger = require('../frame/log/logger');
 var Articleservice = require('../service/Articleservice');
 
 
-router.route("/article/getarticles")
+router.route("/article/getArticleList")
     .post(function (req,res) {
         logger.info('getarticles post data:'+JSON.stringify(req.body));
         Articleservice.getArticleList(req,res);
@@ -18,7 +18,7 @@ router.route("/article/save")
         Articleservice.saveArticle(req,res);
     })
 
-router.route("/article/createarticle")
+router.route("/article/createArticle")
     .post(function (req,res) {
         logger.info('create article post data:'+JSON.stringify(req.body));
         Articleservice.createArticle(req,function (err) {
@@ -35,18 +35,18 @@ router.route('/article/update/:articleid')
 
     });
 
-router.route('/article/share/:articleid')
+router.route('/article/share/:articleId')
     .get(function (req,res) {
-    var articleid = req.params.articleid;
+    var articleid = req.params.articleId;
 
     });
 
-router.route('/article/getsharearticle/:articleid')
+router.route('/article/getsharearticle/:articleId')
     .get(function (req,res) {
 
     });
 
-router.route('article/delete/:articleid')
+router.route('article/delete/:articleId')
     .get(function (req,res) {
 
     });

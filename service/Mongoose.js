@@ -8,14 +8,14 @@ var user = mongoose.model('user',{
     password:String,
     last_login_time:String,
     last_login_ip:String,
-    usertype:String,
+    user_type:String,
 });
 
 var article = mongoose.model('article',{
-    articleid:Number,
+    article_id:Number,
     title:String,
-    ownerip:String,
-    owneremail:String,
+    owner_ip:String,
+    owner_email:String,
     content:String,
     time:String,
 });
@@ -28,7 +28,7 @@ var counter = mongoose.model('counter',{
 function getNextSequenceValue(){
     var sequenceDocument = db.counters.findAndModify(
         {
-            query:{_id: 'articleid' },
+            query:{_id: 'article_id' },
             update: {$inc:{sequence_value:1}},
             new:true
         });

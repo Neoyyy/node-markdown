@@ -3,13 +3,12 @@ var article = require('../mongodb/article').articleModel;
 var responseutil = require('../util/webresponse');
 var counter = require('../mongodb/counter');
 
-function getArticleList(req, res) {
+function getArticleList(email, ip) {
 
 
-    var articleentity = JSON.parse(JSON.stringify(req.body));
     var query = {};
 
-    article.find({"$or":[{"owner_email":articleentity.email},{"owner_ip":req.ip}]},function (err,docs) {
+    article.find({"$or":[{"owner_email":email},{"owner_ip":ip}]},function (err,docs) {
         if (err){
             logger.error("article search err:"+err);
         }
@@ -26,9 +25,9 @@ function getArticleList(req, res) {
         });
 
         logger.info('the result article:'+JSON.stringify(result));
-        res.send(result);
-    })
 
+    })
+    return result;
 }
 
 function saveArticle(req,res){
@@ -40,11 +39,11 @@ function createArticle(req, callback) {
     var articleentity = JSON.parse(JSON.stringify(req.body));
     //todo articleid改为自增
     article.create({article_id:articleentity.articleid,
-                    title:articleentity.title,
-                    owner_ip:req.ip,
-                    owner_email:articleentity.owneremail,
-                    content:articleentity.content,
-                    time:new Date()},function (err,doc) {
+        title:articleentity.title,
+        owner_ip:req.ip,
+        owner_email:articleentity.owneremail,
+        content:articleentity.content,
+        time:new Date()},function (err,doc) {
         if (err){
             logger.error('create article error:'+err);
         }
@@ -77,6 +76,13 @@ function updateArticle(req, callback) {
 
 }
 
+function getArticle(articleId){
+    article.find({article_id:articleId},function (err,docs) {
+
+    })
+    return docs;
+}
+
 function getShareCode(req, res){
 
     var articleentity = JSON.parse(JSON.stringify(req.body));
@@ -85,7 +91,7 @@ function getShareCode(req, res){
 
 
 function exportAs(req, res) {
-    
+
 }
 
 
