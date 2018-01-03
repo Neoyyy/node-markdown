@@ -35,7 +35,3 @@ function getNextSequenceValue(){
     return sequenceDocument.sequence_value;
 }
 
-
-getNextSequenceValue();
-getNextSequenceValue();getNextSequenceValue();
-

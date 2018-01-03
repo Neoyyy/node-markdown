@@ -31,6 +31,10 @@ function getArticleList(req, res) {
 
 }
 
+function saveArticle(req,res){
+    var article = JSON.parse(JSON.stringify(req.body));
+}
+
 
 function createArticle(req, callback) {
     var articleentity = JSON.parse(JSON.stringify(req.body));
@@ -83,5 +87,6 @@ module.exports ={
     getArticleList,
     createArticle,
     deleteArticle,
+    saveArticle,
     updateArticle
 }

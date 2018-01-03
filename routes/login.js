@@ -1,7 +1,7 @@
 var express = require("express");
 var router = express.Router();
 var logger = require('../frame/log/logger');
-var loginService = require('../service/userservice');
+var loginService = require('../service/Userservice');
 
 router.route('/login').post(function (req,res) {
     logger.info('register post data:'+JSON.stringify(req.body));
