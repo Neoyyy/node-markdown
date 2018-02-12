@@ -24,9 +24,11 @@ router.route("/sortContact")
 router.route("/contact/joinGroup")
     .post(function (req, res) {
         
-    })
+    });
 
 router.route("/leaveGroup")
     .post(function (req, res) {
         
-    })
+    });
+
+module.exports = router;

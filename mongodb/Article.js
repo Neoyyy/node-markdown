@@ -10,6 +10,10 @@ var articleSchema = new Schema({
     content:String,
     time:String,
     share_code:String,
+    permissionType:String,//文章权限标识
+    authUserList:Array,//被分配权限的用户列表
+
+
 });
 
 
