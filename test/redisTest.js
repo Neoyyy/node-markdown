@@ -1,4 +1,4 @@
-var redis = require("../redis/redis")
+var redis = require("../redis/cache")
 
 redis.set("foo_rand000000000000", "???",function (error, res) {
     console.log(res)

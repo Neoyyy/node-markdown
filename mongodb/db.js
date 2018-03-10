@@ -1,22 +1,22 @@
-var mongoose = require('mongoose')
-const DB_URL = 'mongodb://localhost/markdown';
+var mongoose = require('mongoose');
+var logger = require("../frame/log/logger");
+var mongodbConf = require("../conf/db");
 
-
-mongoose.connect(DB_URL, {
+mongoose.connect(mongodbConf.url, {
   useMongoClient: true,
   /* other options */
 });
 
 mongoose.connection.on('connected',function(){
-    console.log("connected!!!");
+    logger.info("mongodb connected!!!");
 });
 
 mongoose.connection.on('error',function(err){
-	console.log('mongodb connection err:'+ err);
+	logger.error('mongodb connection err:'+ err);
 });
 
 mongoose.connection.on('disconnected',function(err){
-	console.log('mongodb connection disconnected' + err);
+	logger.error('mongodb connection disconnected' + err);
 });
 
 module.exports = mongoose

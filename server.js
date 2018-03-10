@@ -22,6 +22,34 @@ app.set('port', port);
 var server = http.createServer(app);
 
 
+var io = require('socket.io')(server);
+
+var sockets = {};
+
+io.on('connection', function (socket) {
+    // console.log("????");
+    // socket.on('my other event', function (data) {
+    //     console.log(data);
+    // });
+    var address = socket.handshake.address;
+    logger.info(Date()+"new socket connection from" + address.address + ":" + address.port);
+    socket.on('login',function (userinfo) {
+        //用户登陆
+        logger.info(Date()+"user login from" + address.address + ":" + address.port);
+    })
+
+    socket.on('chat',function (msg,ack) {
+        logger.info(Date()+ "say :" + msg);
+    })
+
+    socket.on('disconnect', function () {
+        var address = socket.handshake.address;
+        logger.info(Date() + "disconnect from " + address.address + ":" + address.port);
+        delete sockets[socket];
+    })
+})
+
+
 /**
  * Listen on provided port, on all network interfaces.
  */
@@ -29,7 +57,6 @@ var server = http.createServer(app);
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
-var io = require("socket.io").listen(server);
 
 /**
  * Normalize a port into a number, string, or false.
@@ -91,38 +118,6 @@ function onListening() {
   logger.info('Listening on ' + bind);
 }
 
-//io.disable('heartbeats')
-//io.set('heartbeats', false);
-io.set('transports', ['websocket', 'xhr-polling']);
-io.set('heartbeat timeout', 5 * 60)
-io.set('heartbeat interval', 4 * 60)
-io.set('close timeout', 1 * 30);
-io.set("log level", 1)
-io.set("browser client", false)
-io.set("browser client cache", false)
-io.set("browser client cache", false)
 
 
-var sockets = {};
 
-io.on('connection', function (socket) {
-    var address = socket.handshake.address;
-    logger.info(Date()+"new connection from" + address.address + ":" + address.port);
-    socket.on('login',function (userinfo) {
-        //用户登陆
-        logger.info(Date()+"user login from" + address.address + ":" + address.port);
-    })
-    
-    socket.on('chat',function (msg,ack) {
-        logger.info(Date()+ "say :" + msg);
-    })
-
-    socket.on('heartbeats',function (msg,ack) {
-        logger.info(Date()+ "heart beat :" + msg);
-    })
-    socket.on('disconnect', function () {
-        var address = socket.handshake.address;
-        logger.info(Date() + "disconnect from " + address.address + ":" + address.port);
-        delete sockets[socket];
-    })
-})
