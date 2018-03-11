@@ -11,8 +11,18 @@ var historyCache = Cache.prototype.newCache;
 function send_history_msg(socket) {
 
 //todo redis获取离线消息
-    var historyMsg;
-    send_msg("historyMsg", historyMsg);
+
+    historyCache.hget("historyMsg", socket.userid, function (err, msg) {
+        if (!socket.is_sending_msg){
+            send_msg("historyMsg", msg);
+        }else{
+            delay_send_msg("historyMsg",msg);
+        }
+        historyCache.hdel("historyMsg", socket.userid,function (err, result) {
+            
+        })
+    })
+
 
 
 }
@@ -48,6 +58,17 @@ function send_msg(event, data) {
 
     }else{
         //保存离线消息到redis
+        var historyList = [];
+        //todo 封装redis/cache
+        historyCache.hget("historyMsg",sendTo, function (err, value) {
+            if (value){
+                historyList = JSON.parse(value);
+                historyList.push(data);
+                historyCache.hset("historyMsg", sendTo, JSON.stringify(historyList), function (err, result) {
+
+                })
+            }
+        })
 
     }
 
@@ -96,6 +117,12 @@ function disconnect(socket, data) {
 }
 
 
+//更改文章权限
+function articleAuthority(data) {
+
+}
+
+
 
 
 module.exports = {
@@ -108,6 +135,21 @@ module.exports = {
 
 
 /**
+ *
+ * article_json:{
+ * articleid,
+ * authoritystatus,
+ * readable[]
+ * owner[],
+ * changeable:
+ * changeablelist[],
+ * unchangeablelist[]
+ *
+ *
+ * }
+ *
+ *
+ *
  * login_json:{
  *
  *userid

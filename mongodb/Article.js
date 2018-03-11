@@ -3,7 +3,7 @@ var mongoose = require('./db');
 Schema = mongoose.Schema;
 
 var articleSchema = new Schema({
-    article_id:Number,
+    article_id:String,
     title:String,
     owner_ip:String,
     owner_email:String,
