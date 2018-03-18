@@ -41,9 +41,9 @@ router.route('/article/share/:articleId')
 
     });
 
-router.route('/article/getsharearticle/:articleId')
+router.route('/article/getsharearticle')
     .get(function (req,res) {
-
+        logger.info("获取分享的文章:"+req.query.articleId)
     });
 
 router.route('article/delete/:articleId')

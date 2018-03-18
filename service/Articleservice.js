@@ -1,7 +1,6 @@
 var logger = require('../frame/log/logger');
 var article = require('../mongodb/article').articleModel;
 var responseutil = require('../util/webresponse');
-var counter = require('../mongodb/counter');
 
 function getArticleList(req, res) {
 

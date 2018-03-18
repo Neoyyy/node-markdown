@@ -27,10 +27,7 @@ var io = require('socket.io')(server);
 var sockets = {};
 
 io.on('connection', function (socket) {
-    // console.log("????");
-    // socket.on('my other event', function (data) {
-    //     console.log(data);
-    // });
+
     var address = socket.handshake.address;
     logger.info(Date()+"new socket connection from" + address.address + ":" + address.port);
     socket.on('login',function (userinfo) {

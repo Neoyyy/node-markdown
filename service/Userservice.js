@@ -1,13 +1,18 @@
 var logger = require('../frame/log/logger');
 var user = require('../mongodb/user').userModel;
 var responseutil = require('../util/webresponse');
-
+var uuid = require("../util/uuid")
 
 function register(req, callback){
     var userentity = JSON.parse(JSON.stringify(req.body))
 
-
-    user.find({email:userentity.email},function (err,docs) {
+    logger.info("register email : " + userentity.email);
+    var a = {
+        mine:{
+            email:userentity.email
+        }
+    }
+    user.find(a,function (err,docs) {
         if (err){
             logger.error('register err:'+err);
             callback(responseutil.createResult(300,'something wrong with server'));
@@ -17,13 +22,22 @@ function register(req, callback){
             callback(responseutil.createResult(300,'user exist'));
 
         }else{
-            user.create({ user_name:userentity.username, password:userentity.password, email:userentity.email}, function(error,doc){
+            logger.info("user not exist,create user : " + userentity.email);
+            var newUser = {
+                mine:{
+                    username:userentity.username
+                    ,id:uuid.createUUID()
+                    ,email:userentity.email
+                    ,password:userentity.password
+                }
+            }
+            user.create(newUser, function(error,doc){
                 if(error) {
                     logger.error('create user error:'+error);
                     callback(responseutil.createResult(300,'create user error'));
 
                 } else {
-                    logger.info('create user success:'+doc);
+                    logger.info('create user success ,uuid : '+doc.mine.id);
                     callback(responseutil.createResult(200,'create user success'));
 
                 }

@@ -1,5 +1,4 @@
 var db = require('./db');
-var counter = require('./counter');
 
 
 
