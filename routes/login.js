@@ -6,7 +6,7 @@ var loginService = require('../service/Userservice');
 router.route('/login').post(function (req,res) {
     logger.info('register post data:'+JSON.stringify(req.body));
     loginService.login(req,function (loginResult) {
-            res.send(loginResult.message);
+            res.send(loginResult);
     })
 
 
@@ -18,7 +18,7 @@ router.route('/register').post(function (req,res) {
 
     logger.info('login post data:'+JSON.stringify(req.body));
     loginService.register(req,function (loginResult) {
-            res.send(loginResult.message);
+            res.send(loginResult);
     })
 
 

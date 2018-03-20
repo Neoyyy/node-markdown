@@ -1,7 +1,7 @@
 function createResult(code, msg, data){
 	let result = {
 		code : code,
-		message : msg,
+		msg : msg,
 		data : data
 	}
 	return result;

@@ -6,32 +6,73 @@ function getArticleList(req, res) {
 
 
     var articleentity = JSON.parse(JSON.stringify(req.body));
-    var query = {};
 
-    article.find({"$or":[{"owner_email":articleentity.email},{"owner_ip":req.ip}]},function (err,docs) {
+    var iparticle = new Array();
+    var userarticle = new Array();
+
+
+    //todo 回调地狱
+    logger.info("查询ip为:"+ req.ip + "的文章");
+    article.find({"ownerid":null,"ownerip":req.ip},function (err,docs) {
         if (err){
-            logger.error("article search err:"+err);
+            logger.error("ip article search err:"+err);
         }
-        logger.info('find???');
-        var result = [];
+//todo 好像查不到id为null
+        if(docs.length > 0){
+            logger.info('find ip article');
+            docs.forEach(function (ele) {
+                iparticle.push(ele);
+            });
+        }
 
-        docs.forEach(function (ele) {
-            resultArticle = {};
-            resultArticle.articleid = ele.article_id;
-            resultArticle.title = ele.title;
-            resultArticle.owneremail = ele.owner_email;
-            resultArticle.time = ele.time;
-            result.push(resultArticle);
-        });
 
-        logger.info('the result article:'+JSON.stringify(result));
-        res.send(result);
-    })
+        //logger.info('the result article:'+JSON.stringify(result));
+        //res.send(result);
+        if (articleentity.userid != undefined){
+            article.find({"ownerid":articleentity.userid},function (err, docs) {
+                if (err){
+                    logger.error("user article search err:"+err);
+
+                }
+
+                if (docs.length >0){
+                    logger.info('find id article');
+                    docs.forEach(function (ele) {
+                        userarticle.push(ele);
+                    });
+                }
+
+
+                var data = {iparticle,userarticle};
+
+                logger.info('the result article:'+JSON.stringify(data));
+                res.send(responseutil.createResult(200,'find article success',JSON.stringify(data)));
+
+
+            })
+        }
+
+
+
+
+
+    });
+
+
+
+
 
 }
 
 function saveArticle(req,res){
-    var article = JSON.parse(JSON.stringify(req.body));
+    var bodyentity = JSON.parse(JSON.stringify(req.body));
+
+    if(bodyentity.userid == undefined){
+        bodyentity.ownerip = req.ip;
+    }
+    
+
+
 }
 
 

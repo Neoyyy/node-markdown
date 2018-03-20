@@ -7,12 +7,8 @@ function register(req, callback){
     var userentity = JSON.parse(JSON.stringify(req.body))
 
     logger.info("register email : " + userentity.email);
-    var a = {
-        mine:{
-            email:userentity.email
-        }
-    }
-    user.find(a,function (err,docs) {
+
+    user.find({"mine.email":userentity.email},function (err,docs) {
         if (err){
             logger.error('register err:'+err);
             callback(responseutil.createResult(300,'something wrong with server'));
@@ -52,16 +48,16 @@ function login(req, callback) {
 
 //TODO 字段无会抛异常
     logger.info("查询doc,email:"+userentity.email)
-    user.findOne({email:userentity.email},function(err,doc){
+    user.findOne({"mine.email":userentity.email},function(err,doc){
         if (err){
             logger.info('login err:'+err);
             callback(responseutil.createResult(300,'something wrong with server'));
         }
 
         logger.info("查出的user doc"+doc);
-        if (doc.password == userentity.password){
+        if (doc.mine.password == userentity.password){
             logger.info('login success');
-            callback(responseutil.createResult(200,doc.username));
+            callback(responseutil.createResult(200,doc.mine.username));
             doc.last_login_time = new Date();
             doc.last_login_ip = req.ip;
             doc.save(function (error, doc) {
