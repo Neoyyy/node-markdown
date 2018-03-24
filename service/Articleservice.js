@@ -1,7 +1,7 @@
 var logger = require('../frame/log/logger');
 var article = require('../mongodb/article').articleModel;
 var responseutil = require('../util/webresponse');
-
+var uuid = require("../util/uuid")
 function getArticleList(req, res) {
 
 
@@ -67,9 +67,57 @@ function getArticleList(req, res) {
 function saveArticle(req,res){
     var bodyentity = JSON.parse(JSON.stringify(req.body));
 
-    if(bodyentity.userid == undefined){
-        bodyentity.ownerip = req.ip;
+    var queryCondition = {};
+    bodyentity.ownerip = req.ip;
+    queryCondition.ownerip = req.ip;
+    queryCondition.title = bodyentity.title;
+    bodyentity.time = new Date().getTime();
+    if(bodyentity.userid != undefined) {
+
+        queryCondition.userid = bodyentity.userid;
     }
+
+    article.find({title:{$in:bodyentity.title}},function (err, docs) {
+        if (err){
+            logger.error("user article search err:"+err);
+
+        }
+//todo 查找
+        if (docs.length >0 && (docs[0].userid == bodyentity.ownerid ||docs[0].ownerip == req.ip)){
+            logger.info('article exist');
+            if (docs[0].time > bodyentity.time){
+                //todo更新文章
+                article.update(queryCondition,bodyentity,function (err) {
+                    if (err){
+                        logger.error('update article ' + bodyentity.articleid +'failed :'+err);
+                        res.send(responseutil.createResult(300,'save article failed',JSON.stringify(req.body)));
+
+                    }
+                    logger.info('update article ' + bodyentity +'success');
+                    logger.info('update article ' + JSON.stringify(req.body) +'success');
+                    res.send(responseutil.createResult(200,'save article success',JSON.stringify(req.body)));
+
+                })
+            }
+        }else{
+            bodyentity.articleid = uuid.createUUID();
+            article.create(bodyentity,function (err,doc) {
+                if (err){
+                    logger.error('save article error:'+err);
+                    res.send(responseutil.createResult(300,'save article failed',JSON.stringify(req.body)));
+
+                }
+                logger.info('create article ' + doc + 'success');
+                res.send(responseutil.createResult(200,'save article success',JSON.stringify(req.body)));
+
+            })
+        }
+
+
+
+
+    })
+
     
 
 
@@ -116,6 +164,10 @@ function updateArticle(req, callback) {
     })
 
 }
+
+
+
+
 
 function getShareCode(req, res){
 
