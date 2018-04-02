@@ -34,7 +34,7 @@ function register(req, callback){
 
                 } else {
                     logger.info('create user success ,uuid : '+doc.mine.id);
-                    callback(responseutil.createResult(200,'create user success'));
+                    callback(responseutil.createResult(200,doc));
 
                 }
             });
@@ -57,7 +57,6 @@ function login(req, callback) {
         logger.info("查出的user doc"+doc);
         if (doc.mine.password == userentity.password){
             logger.info('login success');
-            callback(responseutil.createResult(200,doc.mine.username));
             doc.last_login_time = new Date();
             doc.last_login_ip = req.ip;
             doc.save(function (error, doc) {
@@ -66,6 +65,9 @@ function login(req, callback) {
                     throw new Error('update user doc err');
                 }
             });
+            delete doc.mine.password;//todo pwd没删除成功
+            callback(responseutil.createResult(200,doc));
+
         }else{
             callback(responseutil.createResult(300,'password wrong'));
         }

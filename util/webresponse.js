@@ -8,10 +8,4 @@ function createResult(code, msg, data){
 }
 
 
-function createResponse(res,result){
-	res.setHeader('Content-Type', 'application/json;charset=utf-8');
-	res.send(result);
-}
-
-exports.createResponse = createResponse;
 exports.createResult = createResult;

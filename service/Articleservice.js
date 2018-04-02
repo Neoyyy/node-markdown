@@ -26,10 +26,9 @@ function getArticleList(req, res) {
         }
 
 
-        //logger.info('the result article:'+JSON.stringify(result));
-        //res.send(result);
-        if (articleentity.userid != undefined){
-            article.find({"ownerid":articleentity.userid},function (err, docs) {
+
+        if (articleentity.id != undefined){
+            article.find({"ownerid":articleentity.id},function (err, docs) {
                 if (err){
                     logger.error("user article search err:"+err);
 
@@ -46,7 +45,7 @@ function getArticleList(req, res) {
                 var data = {iparticle,userarticle};
 
                 logger.info('the result article:'+JSON.stringify(data));
-                res.send(responseutil.createResult(200,'find article success',JSON.stringify(data)));
+                res.send(responseutil.createResult(200,'find article success',data));
 
 
             })
