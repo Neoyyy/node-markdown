@@ -6,7 +6,7 @@ var articleSchema = new Schema({
     articleid:String
     ,title:String
     ,ownerip:String
-    ,ownerid:String
+    ,owneremail:String
     ,content:String
     ,time:String
     ,permissiontype:String//文章权限标识

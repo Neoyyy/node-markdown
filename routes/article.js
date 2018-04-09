@@ -9,21 +9,18 @@ router.route("/article/getArticleList")
         logger.info('getarticles post data:'+JSON.stringify(req.body));
         Articleservice.getArticleList(req,res);
     });
-
-//TODO 测试
-router.route("/article/save")
-    .post(function(req,res){
-        logger.info('save article,content:'+JSON.stringify(req.body));
-        logger.info('author:');
-        Articleservice.saveArticle(req,res);
-    })
+//
+// //TODO 测试
+// router.route("/article/save")
+//     .post(function(req,res){
+//         logger.info('save article,content:'+JSON.stringify(req.body));
+//         Articleservice.saveArticle(req,res);
+//     })
 
 router.route("/article/createArticle")
     .post(function (req,res) {
         logger.info('create article post data:'+JSON.stringify(req.body));
-        Articleservice.createArticle(req,function (err) {
-            
-        });
+        Articleservice.createArticle(req,res);
     });
 
 router.route('/article/update/:articleid')
@@ -46,9 +43,11 @@ router.route('/article/getsharearticle')
         logger.info("获取分享的文章:"+req.query.articleId)
     });
 
-router.route('article/delete/:articleId')
-    .get(function (req,res) {
-
+router.route('/article/delete')
+    .post(function (req,res) {
+        var articleId = req.query.articleId;
+        logger.info('delete article ' + articleId + " start");
+        Articleservice.deleteArticle(req,res);
     });
 
 

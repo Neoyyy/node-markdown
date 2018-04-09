@@ -1,10 +1,9 @@
 var logger = require("../frame/log/logger");
-var Cache = require("../redis/cache");
+var RedisCache = require("../redis/cache");
+var webResponse = require("../util/webresponse")
 
+var sockets = new Array()
 
-var sockets = {}
-var publicCache = Cache.prototype.newCache;
-var historyCache = Cache.prototype.newCache;
 
 
 //获取历史消息
@@ -12,15 +11,19 @@ function send_history_msg(socket) {
 
 //todo redis获取离线消息
 
-    historyCache.hget("historyMsg", socket.userid, function (err, msg) {
-        if (!socket.is_sending_msg){
-            send_msg("historyMsg", msg);
-        }else{
-            delay_send_msg("historyMsg",msg);
+    RedisCache.get("historyMsg", socket.userid, function (err, msg) {
+        if(msg.length > 0 ){
+            if (!socket.is_sending_msg){
+                send_msg("historyMsg", msg);
+            }else{
+                delay_send_msg("historyMsg",msg);
+            }
+            RedisCache.hdel("historyMsg", socket.userid,function (err, result) {
+
+            })
         }
-        historyCache.hdel("historyMsg", socket.userid,function (err, result) {
-            
-        })
+
+
     })
 
 
@@ -60,11 +63,11 @@ function send_msg(event, data) {
         //保存离线消息到redis
         var historyList = [];
         //todo 封装redis/cache
-        historyCache.hget("historyMsg",sendTo, function (err, value) {
+        RedisCache.get("historyMsg",sendTo, function (err, value) {
             if (value){
                 historyList = JSON.parse(value);
                 historyList.push(data);
-                historyCache.hset("historyMsg", sendTo, JSON.stringify(historyList), function (err, result) {
+                RedisCache.hset("historyMsg", sendTo, JSON.stringify(historyList), function (err, result) {
 
                 })
             }
@@ -77,11 +80,11 @@ function send_msg(event, data) {
 
 function login(socket, data) {
     var address = socket.handshake.address;
-    logger.info(Date()+" user " + data.userid + " login from" + address.address + ":" + address.port);
-    var old_socket = sockets[data.userid];
-    if(old_socket && data.deviceid != old_socket.deviceid){
+    logger.info(Date()+" user " + data.userid + " login from " + address);
+    var old_socket = sockets[data.id];
+    if(old_socket && address != old_socket.handshake.address){
         old_socket.emit("signout");
-        logger.info("sign out:" + old_socket.userid + ",deviceid: " + old_socket.deviceid);//单点登陆
+        logger.info("sign out:" + old_socket.userid + ",address: " + old_socket.handshake.address);//单点登陆
     }
 
     if(old_socket && old_socket != socket){
@@ -89,13 +92,14 @@ function login(socket, data) {
     }
 
     socket.userid = data.userid;
-    socket.deviceid = data.userid;
 
-    sockets[userid] = socket;
+    sockets[data.userid] = socket;
 
+    console.log("send login success result")
+    socket.emit('loginResult',webResponse.createResult(200,"login Success"));
     send_history_msg(socket);//获取离线消息
 
-    publicCache.publish("user_login_channel",data);
+    //RedisCache.publish("user_login_channel",data);
 
 
 
@@ -105,7 +109,7 @@ function signout(socket, data) {
     var address = socket.handshake.address;
     logger.info(Date()+" user " + data.userid + " sign out," + address.address + ":" + address.port);
     delete sockets[data.userid];
-    publicCache.pubish("user_sign_out_channel",data);
+    RedisCache.pubish("user_sign_out_channel",data);
 
 }
 

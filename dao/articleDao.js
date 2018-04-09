@@ -1,104 +1,73 @@
 var logger = require('../frame/log/logger');
 var article = require('../mongodb/article').articleModel;
-var responseutil = require('../util/webresponse');
-
-function getArticleList(email, ip) {
 
 
-    var query = {};
+function insert(statements){
+    var promise = new Promise(function (resolve, reject) {
+        article.create(statements,function (err,doc) {
+            if (err){
+                logger.error('create article err:' + err);
+                reject(err);
+            }else{
+                logger.info("create article " + doc + "success")
+                resolve(doc);
+            }
 
-    article.find({"$or":[{"owner_email":email},{"owner_ip":ip}]},function (err,docs) {
-        if (err){
-            logger.error("article search err:"+err);
-        }
-        logger.info('find???');
-        var result = [];
-
-        docs.forEach(function (ele) {
-            resultArticle = {};
-            resultArticle.articleid = ele.article_id;
-            resultArticle.title = ele.title;
-            resultArticle.owneremail = ele.owner_email;
-            resultArticle.time = ele.time;
-            result.push(resultArticle);
-        });
-
-        logger.info('the result article:'+JSON.stringify(result));
-
+        })
     })
-    return result;
-}
-
-function saveArticle(req,res){
-    var article = JSON.parse(JSON.stringify(req.body));
+    return promise;
 }
 
 
-function createArticle(req, callback) {
-    var articleentity = JSON.parse(JSON.stringify(req.body));
-    //todo articleid改为自增
-    article.create({article_id:articleentity.articleid,
-        title:articleentity.title,
-        owner_ip:req.ip,
-        owner_email:articleentity.owneremail,
-        content:articleentity.content,
-        time:new Date()},function (err,doc) {
-        if (err){
-            logger.error('create article error:'+err);
-        }
-        logger.info('create article ' + doc + 'success');
+function del(statements) {
+    var promise = new Promise(function (resolve, reject) {
+        article.remove(statements,function (err) {
+            if (err){
+                logger.error("delete article failed");
+                reject(err);
+            }
+            logger.info("delete article success");
+            resolve();
+        })
     })
-
+    return promise;
 }
 
-function deleteArticle(req, callback) {
-    var articleid = req.params.articleid;
-    article.remove({article_id:articleid},function (err) {
-        if (err){
-            logger.error('delete article ' + articleid +'failed :'+err);
-        }
-        logger.info('delete article ' + articleid +' success');
+function get(statements) {
+    var promise = new Promise(function (resolve, reject) {
+        logger.info("get article,condition:" + JSON.stringify(statements));
+        article.findOne(statements,function (err,docs) {
+            if (err){
+                reject(err);
+            }else{
+                logger.info("the article:" + JSON.stringify(docs))
+                resolve(docs);
+            }
+        })
     })
+    return promise;
 }
 
-function updateArticle(req, callback) {
-    var articleentity = JSON.parse(JSON.stringify(req.body));
-    article.update({article_id:articleentity.articleid},articleentity,function (err) {
-        if (err){
-            logger.error('update article ' + articleentity.articleid +'failed :'+err);
-        }
-        logger.info('update article ' + articleentity +'success');
-        logger.info('update article ' + JSON.stringify(req.body) +'success');
+function update(statements) {
+    var promise = new Promise(function (resolve,reject) {
+        article.update(statements,function (err,doc) {
+            if (err){
+                reject(err);
+            }else{
+                resolve(doc);
+            }
 
-
+        })
     })
-
+    return promise;
 }
 
-function getArticle(articleId){
-    article.find({article_id:articleId},function (err,docs) {
-
-    })
-    return docs;
-}
-
-function getShareCode(req, res){
-
-    var articleentity = JSON.parse(JSON.stringify(req.body));
-
-}
-
-
-function exportAs(req, res) {
-
-}
 
 
 
 module.exports ={
-    getArticleList,
-    createArticle,
-    deleteArticle,
-    saveArticle,
-    updateArticle
+    insert,
+    del,
+    get,
+    update
 }

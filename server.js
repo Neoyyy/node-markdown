@@ -6,7 +6,7 @@
 var app = require('./frame/app');
 var http = require('http');
 var logger = require("./frame/log/logger");
-
+var socketSerice = require("./socket/socket")
 
 /**
  * Get port from environment and store in Express.
@@ -24,15 +24,15 @@ var server = http.createServer(app);
 
 var io = require('socket.io')(server);
 
-var sockets = {};
 
-io.on('connection', function (socket) {
+io.sockets.on('connection', function (socket) {
 
     var address = socket.handshake.address;
-    logger.info(Date()+"new socket connection from" + address.address + ":" + address.port);
+    logger.info(Date()+"new socket connection from " + address);
     socket.on('login',function (userinfo) {
         //用户登陆
-        logger.info(Date()+"user login from" + address.address + ":" + address.port);
+        logger.info(Date()+"user login from" + address + " userInfo:" + JSON.stringify(userinfo));
+        socketSerice.login(socket,userinfo);
     })
 
     socket.on('chat',function (msg,ack) {
@@ -42,7 +42,7 @@ io.on('connection', function (socket) {
     socket.on('disconnect', function () {
         var address = socket.handshake.address;
         logger.info(Date() + "disconnect from " + address.address + ":" + address.port);
-        delete sockets[socket];
+        //delete sockets[socket];
     })
 })
 
