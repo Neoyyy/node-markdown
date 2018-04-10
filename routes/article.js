@@ -17,10 +17,10 @@ router.route("/article/getArticleList")
 //         Articleservice.saveArticle(req,res);
 //     })
 
-router.route("/article/createArticle")
+router.route("/article/saveArticle")
     .post(function (req,res) {
         logger.info('create article post data:'+JSON.stringify(req.body));
-        Articleservice.createArticle(req,res);
+        Articleservice.updateArticle(req,res);
     });
 
 router.route('/article/update/:articleid')

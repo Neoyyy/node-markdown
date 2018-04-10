@@ -41,6 +41,7 @@ function get(statements) {
                 reject(err);
             }else{
                 logger.info("the article:" + JSON.stringify(docs))
+                //logger.info("the article length:"+docs.length)
                 resolve(docs);
             }
         })

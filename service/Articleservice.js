@@ -183,8 +183,33 @@ function deleteArticle(req, res) {
 
 function updateArticle(req, res) {
     var articleentity = JSON.parse(JSON.stringify(req.body));
+
+    if(articleentity.articleid == undefined){
+
+            //保存文章
+            logger.info("article id not exist,save article");
+            articleentity.articleid = uuid.createUUID();
+        articleDao.insert(articleentity).then(function (doc) {
+            logger.info("save article success");
+            res.send(responseutil.createResult(200,"保存成功"));
+        },function (err) {
+            logger.info("update article failed");
+            res.send(responseutil.createResult(300,err));
+        })
+
+
+    }
+
+
+
+    
     articleDao.get({articleid:articleentity.articleid}).then(function (doc) {
-        if (doc.length > 0){
+        logger.info("get the article:" + doc)
+        logger.info("string doc:" + JSON.stringify(doc))
+        if (!(JSON.stringify(doc) == 'null') && doc !== undefined ){
+            logger.info("article exist")
+
+            if(doc.length > 0){
             doc.title = articleentity.title;
             doc.content = articleentity.content;
             doc.time = new Date();
@@ -226,8 +251,10 @@ function updateArticle(req, res) {
                         break;
                 }
             }
+        }
         }else{
             //保存文章
+            logger.info("no article find,save article");
         articleDao.insert(articleentity).then(function (doc) {
             logger.info("save article success");
             res.send(responseutil.createResult(200,"保存成功"));
@@ -316,6 +343,5 @@ module.exports ={
     getArticleList,
     createArticle,
     deleteArticle,
-    updateArticle,
-    saveArticle
+    updateArticle
 }
