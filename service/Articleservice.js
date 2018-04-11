@@ -147,19 +147,37 @@ function createArticle(req, res) {
 
 function deleteArticle(req, res) {
     var bodyentity = JSON.parse(JSON.stringify(req.body));
-    var articleId = req.query.articleId;
+    var articleId = bodyentity.articleid;
     //var articleid = req.params.articleid;
     logger.info("query condition:"+articleId)
     articleDao.get({"articleid":articleId}).then(function (doc) {
-        if (doc.length > 0){
-            if(doc.owneremail == undefined){
+        if (!(JSON.stringify(doc) == 'null') && doc !== undefined ){
+            if(doc.owneremail == undefined || bodyentity.mine.email == doc.owneremail){
                 return articleDao.del({articleid:articleId})
             }else{
-                if (bodyentity.email == undefined || bodyentity.email != doc.owneremail){
-                    logger.info("not owner")
-                    res.send(responseutil.createResult(300,"you are not the owner"))
-                }else{
-                    return articleDao.del({articleid:articleId})
+                if(bodyentity.mine.email != doc.owneremail){
+                    switch (doc.permissiontype){
+                        case "2"://可读可修改
+                            return articleDao.del(doc);
+                            break;
+                        case "4"://部分用户可修改
+                            if(doc.authuserlist.indexOf({userid:bodyentity.mine.id}) != -1){
+                                return articleDao.del(doc);
+                            }else{
+                                res.send(responseutil.createResult(300,"无权限删除"));
+                            }
+                            break;
+                        case "5"://部分用户不可修改
+                            if (doc.authuserlist.indexOf({userid:bodyentity.mine.id}) != -1){
+                                return articleDao.update(doc);
+                            }else{
+                                res.send(responseutil.createResult(300,"无权限删除"));
+                            }
+                            break;
+                        default:
+                            res.send(responseutil.createResult(300,"无权限删除"));
+                            break;
+                    }
                 }
 
             }
@@ -170,9 +188,9 @@ function deleteArticle(req, res) {
     },function (err) {
         logger.error(err)
         res.send(responseutil.createResult(300,err));
-    }).then(function () {
+    }).then(function (doc) {
         logger.info("delete success")
-        res.send(responseutil.createResult(200,'delete success'));
+        res.send(responseutil.createResult(200,'delete success',doc));
     },function (err) {
         logger.error(err)
         res.send(responseutil.createResult(300,err));
@@ -271,6 +289,7 @@ function updateArticle(req, res) {
         res.send(responseutil.createResult(200,"修改成功"));
     },function (err) {
         logger.error("update article failed " + err);
+        res.send(responseutil.createResult(300,err));
     });
 
 
@@ -335,6 +354,35 @@ function getShareCode(req, res){
 
 }
 
+function getArticleById(req,res){
+    var articleentity = JSON.parse(JSON.stringify(req.body));
+    logger.info("get article by :" + articleentity.articleid);
+    articleDao.get({articleid:articleentity.articleid}).then(function(doc){
+        if (!(JSON.stringify(doc) == 'null') && doc !== undefined ){
+            logger.info("get the article :" + doc)
+            switch (doc.permissiontype){
+                case "3"://部分用户可读
+                    res.send(responseutil.createResult(300,"仅可读"));
+                    if(doc.authuserlist.indexOf({userid:articleentity.mine.id}) != -1){
+                        res.send(responseutil.createResult(200,"获取文章成功",doc));
+                    }else{
+                        res.send(responseutil.createResult(300,"无权限读取"));
+                    }
+                    break;
+                default:
+                    res.send(responseutil.createResult(200,"获取文章成功",doc));
+                    break;
+            }
+
+        }else{
+            res.send(responseutil.createResult(300,"article not exist"));
+        }
+    },function(err){
+        res.send(responseutil.createResult(300,err));
+
+    })
+}
+
 
 
 
@@ -343,5 +391,6 @@ module.exports ={
     getArticleList,
     createArticle,
     deleteArticle,
-    updateArticle
+    updateArticle,
+    getArticleById
 }

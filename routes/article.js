@@ -38,6 +38,12 @@ router.route('/article/share/:articleId')
 
     });
 
+router.route('/article/getArticleById')
+    .post(function(req,res){
+        Articleservice.getArticleById(req,res);
+    });
+
+
 router.route('/article/getsharearticle')
     .get(function (req,res) {
         logger.info("获取分享的文章:"+req.query.articleId)
@@ -45,8 +51,7 @@ router.route('/article/getsharearticle')
 
 router.route('/article/delete')
     .post(function (req,res) {
-        var articleId = req.query.articleId;
-        logger.info('delete article ' + articleId + " start");
+        logger.info('delete article start');
         Articleservice.deleteArticle(req,res);
     });
 

@@ -21,13 +21,13 @@ function insert(statements){
 
 function del(statements) {
     var promise = new Promise(function (resolve, reject) {
-        article.remove(statements,function (err) {
+        article.remove(statements,function (err,doc) {
             if (err){
                 logger.error("delete article failed");
                 reject(err);
             }
             logger.info("delete article success");
-            resolve();
+            resolve(doc);
         })
     })
     return promise;
