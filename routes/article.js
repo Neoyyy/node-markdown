@@ -45,8 +45,8 @@ router.route('/article/getArticleById')
 
 
 router.route('/article/getsharearticle')
-    .get(function (req,res) {
-        logger.info("获取分享的文章:"+req.query.articleId)
+    .post(function (req,res) {
+        Articleservice.getShareArticle(req,res);
     });
 
 router.route('/article/delete')

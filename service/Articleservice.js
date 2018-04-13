@@ -65,71 +65,32 @@ function getArticleList(req, res) {
 
 function getShareArticle(req,res) {
     var bodyentity = JSON.parse(JSON.stringify(req.body));
-    var querycondition = {};
+    logger.info("get shared article:" + bodyentity.articleid);
+    articleDao.get({articleid:bodyentity.articleid}).then(function(doc){
+        if (!(JSON.stringify(doc) == 'null') && doc !== undefined ){
+            if(doc.owneremail == undefined || bodyentity.mine.email == doc.owneremail){
+                res.send(responseutil.createResult(200,"get",doc));
+            }else{
+                if(bodyentity.mine.email != doc.owneremail){
+                    switch (doc.permissiontype){
+                        case "2"://可读可修改
+                        res.send(responseutil.createResult(200,"get",doc));
+                        break;
+                        default:
+                            res.send(responseutil.createResult(300,"无权限删除"));
+                            break;
+                    }
+                }
 
+            }
+        }else{
+            res.send(responseutil.createResult(300,'not find'));
+        }
+    },function (err) {
+        res.send(responseutil.createResult(300,'not find'));
+    })
 }
 
-// function saveArticle(req,res){
-//     var bodyentity = JSON.parse(JSON.stringify(req.body));
-//     logger.info("save article start");
-//     articleDao.get({articleid:bodyentity.articleid}).then(function (doc) {
-//         if (doc.length > 0){
-//
-//         }
-//     },function (err) {
-//         logger.error("find article " + bodyentity.articleid + "failed, err:" + err);
-//         res.send(responseutil.createResult(300,err));
-//     })
-//
-//
-//
-//
-//
-//     article.find({title:{$in:bodyentity.title}},function (err, docs) {
-//         if (err){
-//             logger.error("user article search err:"+err);
-//
-//         }
-// //todo 查找
-//         if (docs.length >0 && (docs[0].userid == bodyentity.ownerid ||docs[0].ownerip == req.ip)){
-//             logger.info('article exist');
-//             if (docs[0].time > bodyentity.time){
-//                 //todo更新文章
-//                 article.update(queryCondition,bodyentity,function (err) {
-//                     if (err){
-//                         logger.error('update article ' + bodyentity.articleid +'failed :'+err);
-//                         res.send(responseutil.createResult(300,'save article failed',JSON.stringify(req.body)));
-//
-//                     }
-//                     logger.info('update article ' + bodyentity +'success');
-//                     logger.info('update article ' + JSON.stringify(req.body) +'success');
-//                     res.send(responseutil.createResult(200,'save article success',JSON.stringify(req.body)));
-//
-//                 })
-//             }
-//         }else{
-//             bodyentity.articleid = uuid.createUUID();
-//             article.create(bodyentity,function (err,doc) {
-//                 if (err){
-//                     logger.error('save article error:'+err);
-//                     res.send(responseutil.createResult(300,'save article failed',JSON.stringify(req.body)));
-//
-//                 }
-//                 logger.info('create article ' + doc + 'success');
-//                 res.send(responseutil.createResult(200,'save article success',JSON.stringify(req.body)));
-//
-//             })
-//         }
-//
-//
-//
-//
-//     })
-//
-//
-//
-//
-// }
 
 
 function createArticle(req, res) {
@@ -157,25 +118,26 @@ function deleteArticle(req, res) {
             }else{
                 if(bodyentity.mine.email != doc.owneremail){
                     switch (doc.permissiontype){
-                        case "2"://可读可修改
-                            return articleDao.del(doc);
-                            break;
-                        case "4"://部分用户可修改
-                            if(doc.authuserlist.indexOf({userid:bodyentity.mine.id}) != -1){
-                                return articleDao.del(doc);
+                        case "6":
+                            if(doc.authuserlist.indexOf({userid:articleentity.mine.id}) != -1){
+                                res.send(responseutil.createResult(200,"get",doc));
                             }else{
-                                res.send(responseutil.createResult(300,"无权限删除"));
-                            }
+                                res.send(responseutil.createResult(300,"无权限读"));
+                            }  
                             break;
-                        case "5"://部分用户不可修改
-                            if (doc.authuserlist.indexOf({userid:bodyentity.mine.id}) != -1){
-                                return articleDao.update(doc);
+                        case "7":
+                            if(doc.authuserlist.indexOf({userid:articleentity.mine.id}) != -1){
+                                res.send(responseutil.createResult(300,"无权限读"));
                             }else{
-                                res.send(responseutil.createResult(300,"无权限删除"));
-                            }
+                                res.send(responseutil.createResult(200,"get",doc));
+                            }                 
                             break;
+                        case "8":
+                            res.send(responseutil.createResult(300,"无权限读"));
+                            break;
+                    
                         default:
-                            res.send(responseutil.createResult(300,"无权限删除"));
+                            res.send(responseutil.createResult(200,"get",doc));
                             break;
                     }
                 }
@@ -198,6 +160,7 @@ function deleteArticle(req, res) {
 
 
 }
+//6 部分用户可读    7部分用户不可读  8仅自己可读
 
 function updateArticle(req, res) {
     var articleentity = JSON.parse(JSON.stringify(req.body));
@@ -392,5 +355,6 @@ module.exports ={
     createArticle,
     deleteArticle,
     updateArticle,
-    getArticleById
+    getArticleById,
+    getShareArticle
 }
