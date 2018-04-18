@@ -23,12 +23,11 @@ router.route("/article/saveArticle")
         Articleservice.updateArticle(req,res);
     });
 
-router.route('/article/update/:articleid')
+router.route('/article/updateArticle')
     .post(function (req,res) {
-        logger.info('update article id:'+JSON.parse(JSON.stringify(req.body)).articleid);
-        Articleservice.updateArticle(req,function (callback) {
+        logger.info('update article post data:'+JSON.stringify(req.body));
+        Articleservice.updateArticle(req,res);
 
-        })
 
     });
 

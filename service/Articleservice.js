@@ -181,9 +181,6 @@ function updateArticle(req, res) {
 
     }
 
-
-
-    
     articleDao.get({articleid:articleentity.articleid}).then(function (doc) {
         logger.info("get the article:" + doc)
         logger.info("string doc:" + JSON.stringify(doc))
