@@ -1,15 +1,15 @@
-var logger = require('../frame/log/logger');
+var log = require('../frame/log/logger');
 var article = require('../mongodb/article').articleModel;
 
 
-function insert(statements){
+function insert(stateMent){
     var promise = new Promise(function (resolve, reject) {
-        article.create(statements,function (err,doc) {
+        article.create(stateMent,function (err,doc) {
             if (err){
-                logger.error('create article err:' + err);
+                log.error('create article err:' + err);
                 reject(err);
             }else{
-                logger.info("create article " + doc + "success")
+                log.info("create article success:" + doc);
                 resolve(doc);
             }
 
@@ -19,42 +19,72 @@ function insert(statements){
 }
 
 
-function del(statements) {
+function del(stateMent) {
     var promise = new Promise(function (resolve, reject) {
-        article.remove(statements,function (err,doc) {
+        article.remove(stateMent,function (err,doc) {
             if (err){
-                logger.error("delete article failed");
+                log.error("delete article failed");
                 reject(err);
             }
-            logger.info("delete article success");
+            log.info("delete article success");
             resolve(doc);
         })
     })
     return promise;
 }
 
-function get(statements) {
+function getOne(stateMent) {
     var promise = new Promise(function (resolve, reject) {
-        logger.info("get article,condition:" + JSON.stringify(statements));
-        article.findOne(statements,function (err,docs) {
+        log.info("get article,condition:" + JSON.stringify(statements));
+        article.findOne(stateMent,function (err,doc) {
             if (err){
+                log.error("get article failed:" + err);
                 reject(err);
             }else{
-                logger.info("the article:" + JSON.stringify(docs))
-                //logger.info("the article length:"+docs.length)
-                resolve(docs);
+                if (doc != null && JSON.stringify(doc).length >0){
+                    log.info("the article:" + JSON.stringify(doc));
+                    resolve(doc);
+                }else{
+                    log.error("get article failed");
+                    reject();
+                }
             }
         })
     })
     return promise;
 }
 
-function update(statements) {
-    var promise = new Promise(function (resolve,reject) {
-        article.update(statements,function (err,doc) {
+function getDocs(stateMent) {
+    var promise = new Promise(function (resolve, reject) {
+        log.info("get article,condition:" + JSON.stringify(statements));
+        article.findOne(stateMent,function (err,docs) {
             if (err){
+                log.error("get article failed:" + err);
                 reject(err);
             }else{
+                if (docs != null && JSON.stringify(docs).length >0){
+                    log.info("the article:" + JSON.stringify(docs));
+                    resolve(docs);
+                }else{
+                    log.error("get article failed");
+                    reject();
+                }
+            }
+        })
+    })
+    return promise;
+}
+
+
+//todo 未测
+function update(stateMent, newEntity) {
+    var promise = new Promise(function (resolve,reject) {
+        article.update(stateMent, newEntity, function (err,doc) {
+            if (err){
+                log.error("update article failed:" + err);
+                reject(err);
+            }else{
+                log.info("update article success");
                 resolve(doc);
             }
 
@@ -66,9 +96,10 @@ function update(statements) {
 
 
 
-module.exports ={
+module.exports = {
     insert,
     del,
-    get,
+    getDocs,
+    getOne,
     update
 }
