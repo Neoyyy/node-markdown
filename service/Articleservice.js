@@ -27,6 +27,7 @@ async function getArticles(req) {
     if (errorMsg.length < 2){
         return {ipArticles,ownerArticles};
     }else{
+        log.error("get article failed, don't get any articles");
         throw 'don\'t get any articles';
     }
 
@@ -46,6 +47,7 @@ async function getShareArticle(req) {
             switch (article.authtype){
                 case 7:
                     if (article.userlist.indexOf(reqEntity.email) != -1){
+                        log.error("unable to get share article, cant read, type: 7");
                         throw 'unable to read'
                     }else{
                         return article;
@@ -55,6 +57,7 @@ async function getShareArticle(req) {
                     if (article.userlist.indexOf(reqEntity.email) != -1){
                         return article;
                     }else{
+                        log.error("unable to get share article, cant read, type: 3");
                         throw 'unable to read';
                     }
                     break;
@@ -72,6 +75,7 @@ async function insertArticle(req) {
     reqEntity.time = new Date();
     reqEntity.articleid = uuid.createUUID();
     return await articleDao.insert(reqEntity).catch(err =>{
+        log.error("insert article failed, err: " + err);
         throw 'insert article failed';
     })
 }
@@ -80,10 +84,12 @@ async function updateArticle(req) {
 
     var reqEntity = JSON.parse(JSON.stringify(req.body));
     var article = await articleDao.getOne({articleid:reqEntity.articleid}).catch(err =>{
+        log.error("get article failed, err: " + err);
         throw 'get article failed';
     });
     if (article != undefined && JSON.stringify(article).length >0 ){
         return await articleDao.insert(reqEntity).catch(err =>{
+            log.error("insert article failed, err: " + err);
             throw 'insert article failed';
         });
     }else{
@@ -91,6 +97,7 @@ async function updateArticle(req) {
             reqEntity.time = new Data();
             reqEntity.ownerip = req.ip;
             return await articleDao.update({articleid:reqEntity.articleid},reqEntity).catch(err =>{
+                log.error("update article failed, err: " + err);
                 throw 'update article failed';
             });
         }else{
@@ -98,23 +105,28 @@ async function updateArticle(req) {
                 case 2:
                     if (article.userlist.indexOf(reqEntity.owneremail) != -1){
                         return await articleDao.update({articleid:reqEntity.articleid}, reqEntity).catch(err =>{
+                            log.error("unable to update article failed, err: " + err);
                             throw 'unable to update article';
                         })
                     }else{
+                        log.error("unable to update article failed, type: 2");
                         throw 'unable to update article';
                     }
                     break;
                 case 4:
                     if (article.userlist.indexOf(reqEntity.owneremail) != -1){
+                        log.error("unable to update article failed, type: 4");
                         throw 'unable to update article';
                     }else{
                         return await articleDao.update({articleid:reqEntity.articleid}, reqEntity).catch(err =>{
+                            log.error("unable to update article failed, err: " + err);
                             throw 'unable to update article';
                         })
                     }
                     break;
                 default:
                     return await articleDao.update({articleid:reqEntity.articleid}, reqEntity).catch(err =>{
+                        log.error("unable to update article failed, err: " + err);
                         throw 'unable to update article';
                     })
                     break;

@@ -2,10 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="70a086ea-b082-4cb4-9ae5-b08815fdaf90" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dao/articleDao.js" afterPath="$PROJECT_DIR$/dao/articleDao.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dao/userDao.js" afterPath="$PROJECT_DIR$/dao/userDao.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/service/Articleservice.js" afterPath="$PROJECT_DIR$/service/Articleservice.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/service/Userservice.js" afterPath="$PROJECT_DIR$/service/Userservice.js" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -52,12 +50,15 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Userservice.js" pinned="false" current-in-tab="false">
+      <file leaf-file-name="Userservice.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/service/Userservice.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="231">
-              <caret line="50" column="16" lean-forward="false" selection-start-line="50" selection-start-column="9" selection-end-line="50" selection-end-column="16" />
-              <folding />
+            <state relative-caret-position="517">
+              <caret line="126" column="16" lean-forward="false" selection-start-line="126" selection-start-column="16" selection-end-line="126" selection-end-column="16" />
+              <folding>
+                <element signature="e#1480#1516#0" expanded="false" />
+                <element signature="e#2930#2964#0" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -82,18 +83,6 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Article.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/mongodb/Article.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="247">
-              <caret line="13" column="16" lean-forward="false" selection-start-line="13" selection-start-column="16" selection-end-line="13" selection-end-column="16" />
-              <folding>
-                <marker date="1523337341450" expanded="true" signature="91:312" ph="{&quot;article_id&quot;: Number...}" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="article.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/routes/article.js">
           <provider selected="true" editor-type-id="text-editor">
@@ -114,18 +103,28 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Articleservice.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Articleservice.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/service/Articleservice.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="479">
-              <caret line="390" column="4" lean-forward="false" selection-start-line="390" selection-start-column="4" selection-end-line="390" selection-end-column="4" />
+            <state relative-caret-position="129">
+              <caret line="128" column="82" lean-forward="false" selection-start-line="128" selection-start-column="82" selection-end-line="128" selection-end-column="82" />
               <folding>
-                <element signature="e#4732#4734#0" expanded="false" />
-                <element signature="e#6170#6208#0" expanded="false" />
-                <element signature="e#7371#7408#0" expanded="false" />
-                <element signature="e#7798#7835#0" expanded="false" />
-                <element signature="e#10272#10274#0" expanded="false" />
+                <element signature="e#5621#5623#0" expanded="false" />
+                <element signature="e#7059#7097#0" expanded="false" />
+                <element signature="e#8260#8297#0" expanded="false" />
+                <element signature="e#8687#8724#0" expanded="false" />
+                <element signature="e#11161#11163#0" expanded="false" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Mongoose.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/service/Mongoose.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="270">
+              <caret line="28" column="35" lean-forward="false" selection-start-line="28" selection-start-column="35" selection-end-line="28" selection-end-column="35" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -187,7 +186,6 @@
         <option value="$PROJECT_DIR$/frame/app.js" />
         <option value="$PROJECT_DIR$/util/webresponse.js" />
         <option value="$PROJECT_DIR$/routes/login.js" />
-        <option value="$PROJECT_DIR$/service/Userservice.js" />
         <option value="$PROJECT_DIR$/server.js" />
         <option value="$PROJECT_DIR$/conf/redis.json" />
         <option value="$PROJECT_DIR$/redis/cache.js" />
@@ -197,6 +195,7 @@
         <option value="$PROJECT_DIR$/dao/userDao.js" />
         <option value="$PROJECT_DIR$/dao/articleDao.js" />
         <option value="$PROJECT_DIR$/service/Articleservice.js" />
+        <option value="$PROJECT_DIR$/service/Userservice.js" />
       </list>
     </option>
   </component>
@@ -218,11 +217,11 @@
   <component name="NodeModulesDirectoryManager">
     <handled-path value="$PROJECT_DIR$/node_modules" />
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="64" />
-    <option name="y" value="213" />
+  <component name="ProjectFrameBounds">
+    <option name="x" value="323" />
+    <option name="y" value="23" />
     <option name="width" value="1366" />
-    <option name="height" value="694" />
+    <option name="height" value="697" />
   </component>
   <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="2" id="Add" />
@@ -422,7 +421,7 @@
       <workItem from="1523179175308" duration="6000" />
       <workItem from="1523181527140" duration="3565000" />
       <workItem from="1523218788838" duration="29000" />
-      <workItem from="1524486983844" duration="8241000" />
+      <workItem from="1524486983844" duration="9981000" />
     </task>
     <task id="LOCAL-00001" summary="articleserver interface">
       <created>1512099676121</created>
@@ -470,10 +469,10 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="204283000" />
+    <option name="totallyTimeSpent" value="206023000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="23" width="1366" height="697" extended-state="6" />
+    <frame x="323" y="23" width="1366" height="697" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.15687732" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" x="561" y="60" width="243" height="617" />
@@ -777,13 +776,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/service/Mongoose.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="339">
-          <caret line="28" column="35" lean-forward="false" selection-start-line="28" selection-start-column="35" selection-end-line="28" selection-end-column="35" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/socket/socket.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="3268">
@@ -806,14 +798,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="152">
           <caret line="8" column="32" lean-forward="false" selection-start-line="8" selection-start-column="21" selection-end-line="8" selection-end-column="32" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/service/Userservice.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="231">
-          <caret line="50" column="16" lean-forward="false" selection-start-line="50" selection-start-column="9" selection-end-line="50" selection-end-column="16" />
           <folding />
         </state>
       </provider>
@@ -850,14 +834,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/dao/userDao.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="324">
-          <caret line="51" column="9" lean-forward="false" selection-start-line="51" selection-start-column="9" selection-end-line="51" selection-end-column="9" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/dao/articleDao.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="196">
@@ -866,16 +842,43 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/service/Mongoose.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="28" column="35" lean-forward="false" selection-start-line="28" selection-start-column="35" selection-end-line="28" selection-end-column="35" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dao/userDao.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="324">
+          <caret line="51" column="9" lean-forward="false" selection-start-line="51" selection-start-column="9" selection-end-line="51" selection-end-column="9" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/service/Articleservice.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="479">
-          <caret line="390" column="4" lean-forward="false" selection-start-line="390" selection-start-column="4" selection-end-line="390" selection-end-column="4" />
+        <state relative-caret-position="129">
+          <caret line="128" column="82" lean-forward="false" selection-start-line="128" selection-start-column="82" selection-end-line="128" selection-end-column="82" />
           <folding>
-            <element signature="e#4732#4734#0" expanded="false" />
-            <element signature="e#6170#6208#0" expanded="false" />
-            <element signature="e#7371#7408#0" expanded="false" />
-            <element signature="e#7798#7835#0" expanded="false" />
-            <element signature="e#10272#10274#0" expanded="false" />
+            <element signature="e#5621#5623#0" expanded="false" />
+            <element signature="e#7059#7097#0" expanded="false" />
+            <element signature="e#8260#8297#0" expanded="false" />
+            <element signature="e#8687#8724#0" expanded="false" />
+            <element signature="e#11161#11163#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/service/Userservice.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="517">
+          <caret line="126" column="16" lean-forward="false" selection-start-line="126" selection-start-column="16" selection-end-line="126" selection-end-column="16" />
+          <folding>
+            <element signature="e#1480#1516#0" expanded="false" />
+            <element signature="e#2930#2964#0" expanded="false" />
           </folding>
         </state>
       </provider>
