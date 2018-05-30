@@ -3,29 +3,169 @@ var article = require('../mongodb/article').articleModel;
 var responseutil = require('../util/webresponse');
 var uuid = require("../util/uuid")
 var articleDao = require("../dao/articleDao")
+var fs = require('fs');
+var markdownpdf= require('markdown-pdf')
+// 4部分用户不可读
+// 5仅自己可读
+//6部分用户不可修改
+// 1 所有人可读可修改
+// 2 部分用户仅可读
+// 3 部分用户可修改
+async function getArticleById(req) {
+    var reqEntity = req.body;
+    log.info("find article by :" + reqEntity.articleid);
+    var article = await articleDao.getOne({articleid:reqEntity.articleid}).catch(err =>{
+        log.error("find article by id failed:" + err);
+        throw 'get article failed';
+    });
+    if (article && JSON.stringify(article).length> 2){
+        if (reqEntity.editemail != null && reqEntity.editemail != ''){
 
+            switch (article.authtype){
+                case '4':
+                    if (article.userlist.indexOf(reqEntity.editemail) != -1){
+                        throw 'unable to get';
+                    }else{
+                        return article;
+                    }
+                    break;
+                case '5':
+                    if (article.owneremail != reqEntity.editemail){
+                        throw 'unable to get,not owner';
+                    }else{
+                        return article;
+                    }
+                    break;
+                default:
+                    return article;
+                    break
+            }
+        }else{
+
+            switch (article.authtype){
+
+                case '4':
+                    throw 'unable to get,not login';
+                    break;
+                case '5':
+                    throw 'unable to get,not owner';
+                    break;
+                default:
+                    return article;
+                    break;
+
+            }
+        }
+
+    }else{
+        throw 'article not exist';
+    }
+}
+
+
+//todo 测试
+async function deleteArticle(req) {
+    var reqEntity = req.body;
+    log.info("the article will delete: " + JSON.stringify(reqEntity));
+    if (reqEntity.articleid == null || !reqEntity.articleid){
+        log.error("before delete ,article not exist")
+        throw 'article not exist';
+    }else{
+        log.info("before delete ,find article,statement: " + JSON.stringify({articleid:reqEntity.articleid}))
+        var article = await articleDao.getOne({articleid:reqEntity.articleid}).catch(err=>{
+            log.error("before delete, get article failed, err: " + err);
+            throw err;
+        });
+        if (article && article.articleid){
+
+            if (!article.owneremail){
+                var a = await articleDao.del({articleid:reqEntity.articleid}).catch(err=>{
+                    log.error("while delete err: " + err);
+                    throw 'delete failed';
+                })
+                return a;
+            }else{
+                if (article.owneremail == article.editemail){
+                    var a = await articleDao.del({articleid:reqEntity.articleid}).catch(err=>{
+                        log.error("while delete err: " + err);
+                        throw 'delete failed';
+                    })
+                    return a;
+                }else{
+
+                    log.error("not owner")
+                    throw 'not owner';
+                }
+                // switch (article.authtype){
+                //     case 3:
+                //         if (article.userlist.indexOf(reqEntity.editemail) != -1) {
+                //             var a = await articleDao.del({articleid:reqEntity.articleid}).catch(err=>{
+                //                 log.error("while delete err: " + err);
+                //             })
+                //             return a;
+                //         }else{
+                //             log.error("unable to delete");
+                //             throw 'unable to delete'
+                //         }
+                //             break;
+                //     case 1:
+                //         var a = await articleDao.del({articleid:reqEntity.articleid}).catch(err=>{
+                //             log.error("while delete err: " + err);
+                //         })
+                //         return a;
+                //         break;
+                //     case 6:
+                //         if (article.userlist.indexOf(reqEntity.editemail) != -1) {
+                //             log.error("unable to delete");
+                //             throw 'unable to delete'
+                //         }else{
+                //             var a = await articleDao.del({articleid:reqEntity.articleid}).catch(err=>{
+                //                 log.error("while delete err: " + err);
+                //             })
+                //             return a;
+                //         }
+                //         break;
+                //     default:
+                //         throw 'unable to delete';
+                //         break;
+                // }
+            }
+
+        }else{
+            log.error("before delete ,article not exist")
+            throw 'article not exist';
+
+        }
+    }
+}
 
 async function getArticles(req) {
     var ipArticles = null;
     var ownerArticles = null;
     var errorMsg = new Array();
-    log.info("type of req body:"+typeof req.body)
-    var reqEntity = JSON.parse(JSON.parse(req.body));
-    log.info("get articles,req body:" + reqEntity);
-    if (reqEntity.owneremail != undefined){
-        log.info("query for " + reqEntity.owneremail + "'s articles");
-        ownerArticles = await articleDao.getDocs({owneremail:reqEntity.owneremail}).catch(err =>{
-            log.error("get " + reqEntity.owneremail + " failed:" + err);
+    var reqEntity = req.body;
+    log.info("get articles,req body:" + JSON.stringify(reqEntity));
+    if (reqEntity.email != undefined){
+        log.info("query for " + reqEntity.email + "'s articles");
+        ownerArticles = await articleDao.getDocs({owneremail:reqEntity.email}).catch(err =>{
+            log.error("get " + reqEntity.email + " failed:" + err);
             errorMsg.push('get owneremail article failed');
         });
     }
-    ipArticles = await articleDao.getDocs({ownerip:req.ip, owneremail:{ $exists: false}}).catch(err =>{
+    ipArticles = await articleDao.getDocs({ownerip:req.ip, owneremail:""}).catch(err =>{
         log.error("get " + req.ip + " failed:" + err);
         errorMsg.push('get  host article failed');
     });
 
     if (errorMsg.length < 2){
-        return {ipArticles,ownerArticles};
+        var result = {};
+        if (ipArticles != null){
+            result.ipArticles = ipArticles;
+        }
+        if (ownerArticles != null){
+            result.ownerArticles = ownerArticles;
+        }
+        return result;
     }else{
         log.error("get article failed, don't get any articles");
         throw 'don\'t get any articles';
@@ -45,7 +185,7 @@ async function getShareArticle(req) {
             return article;
         }else{
             switch (article.authtype){
-                case 7:
+                case 4:
                     if (article.userlist.indexOf(reqEntity.email) != -1){
                         log.error("unable to get share article, cant read, type: 7");
                         throw 'unable to read'
@@ -53,7 +193,7 @@ async function getShareArticle(req) {
                         return article;
                     }
                     break;
-                case 3:
+                case 2:
                     if (article.userlist.indexOf(reqEntity.email) != -1){
                         return article;
                     }else{
@@ -80,120 +220,155 @@ async function insertArticle(req) {
     })
 }
 
-async function updateArticle(req) {
+async function saveAsPDF(req) {
+    var reqEntity = req.body;
+    log.info("service save as pdf");
+    return new Promise(function (resolve, reject) {
+        var fileName = uuid.createUUID();
+        fs.writeFile(process.cwd() + '/public/temp/' + fileName + '.md', reqEntity.content, {flag: 'a'}, function (err) {
+            if(err) {
+                reject(err);
+            } else {
 
-    var reqEntity = JSON.parse(JSON.stringify(req.body));
-    var article = await articleDao.getOne({articleid:reqEntity.articleid}).catch(err =>{
-        log.error("get article failed, err: " + err);
-        throw 'get article failed';
-    });
-    if (article != undefined && JSON.stringify(article).length >0 ){
-        return await articleDao.insert(reqEntity).catch(err =>{
-            log.error("insert article failed, err: " + err);
-            throw 'insert article failed';
-        });
-    }else{
-        if (article.owneremail == reqEntity.owneremail){
-            reqEntity.time = new Data();
-            reqEntity.ownerip = req.ip;
-            return await articleDao.update({articleid:reqEntity.articleid},reqEntity).catch(err =>{
-                log.error("update article failed, err: " + err);
-                throw 'update article failed';
-            });
-        }else{
-            switch (article.authtype){
-                case 2:
-                    if (article.userlist.indexOf(reqEntity.owneremail) != -1){
-                        return await articleDao.update({articleid:reqEntity.articleid}, reqEntity).catch(err =>{
-                            log.error("unable to update article failed, err: " + err);
-                            throw 'unable to update article';
-                        })
-                    }else{
-                        log.error("unable to update article failed, type: 2");
-                        throw 'unable to update article';
-                    }
-                    break;
-                case 4:
-                    if (article.userlist.indexOf(reqEntity.owneremail) != -1){
-                        log.error("unable to update article failed, type: 4");
-                        throw 'unable to update article';
-                    }else{
-                        return await articleDao.update({articleid:reqEntity.articleid}, reqEntity).catch(err =>{
-                            log.error("unable to update article failed, err: " + err);
-                            throw 'unable to update article';
-                        })
-                    }
-                    break;
-                default:
-                    return await articleDao.update({articleid:reqEntity.articleid}, reqEntity).catch(err =>{
-                        log.error("unable to update article failed, err: " + err);
-                        throw 'unable to update article';
-                    })
-                    break;
+                var readStream = fs.createReadStream(process.cwd() + '/public/temp/' + fileName + '.md');
+                var writeStream = fs.createWriteStream(process.cwd() + '/public/temp/' + fileName + '.pdf');
+                    readStream.pipe(markdownpdf())
+                    .pipe(writeStream)
+                writeStream.on('close', function () {
+                    resolve(fileName);
+
+                });
+
+
+
+                readStream.on('end',function () {
+
+                })
             }
-        }
-    }
+        });
+    })
+
+
 
 }
 
-//6 部分用户可读    7部分用户不可读  8仅自己可读 1 所有人可读可修改 2可修改 3 部分用户可读 4 部分用户可修改
 
-//
-// function getArticleList(req, res) {
-//
-//
-//     var articleentity = JSON.parse(JSON.stringify(req.body));
-//
-//     var iparticle = new Array();
-//     var userarticle = new Array();
-//
-//
-//     logger.info("查询ip为:"+ req.ip + "的文章");
-//     article.find({"ownerid":null,"ownerip":req.ip},function (err,docs) {
-//         if (err){
-//             logger.error("ip article search err:"+err);
-//         }
-// //todo 好像查不到id为null
-//         if(docs.length > 0){
-//             logger.info('find ip article');
-//             docs.forEach(function (ele) {
-//                 iparticle.push(ele);
-//             });
-//         }
-//
-//
-//
-//         if (articleentity.id != undefined){
-//             article.find({"ownerid":articleentity.id},function (err, docs) {
-//                 if (err){
-//                     logger.error("user article search err:"+err);
-//
-//                 }
-//
-//                 if (docs.length >0){
-//                     logger.info('find id article');
-//                     docs.forEach(function (ele) {
-//                         userarticle.push(ele);
-//                     });
-//                 }
-//
-//
-//                 var data = {iparticle,userarticle};
-//
-//                 logger.info('the result article:'+JSON.stringify(data));
-//                 res.send(responseutil.createResult(200,'find article success',data));
-//
-//
-//             })
-//         }
-//
-//     });
-//
-//
-//
-//
-//
-// }
+async function updateArticle(req) {
+
+    var reqEntity = req.body;
+    log.info("the article::::" + JSON.stringify(reqEntity))
+    // var list = [];
+    // reqEntity.userlist.forEach(function (item) {
+    //     list.push({
+    //         userid:item
+    //     })
+    // })
+    var updateStatment = {
+        $set:{
+            title:reqEntity.title,
+            ownerip:req.ip,
+            owneremail:reqEntity.owneremail,
+            content:reqEntity.content,
+            time:new Date(),
+            authtype:reqEntity.authtype,
+            userlist:reqEntity.userlist
+
+        }
+    }
+    if (reqEntity.articleid == null || reqEntity.articleid.length <= 0){
+        reqEntity.articleid = uuid.createUUID();
+        //作为新的文章插入
+        log.info("no owner article,save as ipArticle");
+        reqEntity.ownerip = req.ip;
+        delete reqEntity._id;
+
+        return await articleDao.insert(reqEntity).catch(err =>{
+            log.error("save as ipArticle failed, err: " + err);
+            throw err;
+        })
+    }else{
+        //查询已有的文章做对比
+        var article = await articleDao.getOne({articleid:reqEntity.articleid}).catch(err =>{
+            log.error("get article failed, err: " + err);
+            throw 'get article failed';
+        });
+
+        article = article._doc
+        if (reqEntity.isUpdate){
+            //修改他人
+            if (article.authtype){
+
+                switch (article.authtype){
+                    case '2':
+                            log.error("3 unable to update article failed, type: 2");
+                            throw 'unable to update article';
+                        break;
+                    case '3':
+                        if (article.userlist.indexOf(reqEntity.editemail) != -1) {
+                            return await articleDao.update({articleid:reqEntity.articleid}, updateStatment).catch(err =>{
+                                log.error("3 unable to update article failed, err: " + err);
+                                throw 'unable to update article';
+                            })
+                        }else{
+
+                            log.error("3 unable to update article failed, type: 3");
+                            throw 'unable to update article';
+                        }
+                        break;
+                    case '6':
+                        if (article.userlist.indexOf(reqEntity.editemail) != -1) {
+                            log.error("6 unable to update article failed, type: 6");
+                            throw 'unable to update article';
+                        }else{
+                            return await articleDao.update({articleid:reqEntity.articleid}, updateStatment).catch(err =>{
+                                log.error("6 unable to update article failed, err: " + err);
+                                throw 'unable to update article';
+                            })
+
+                        }
+                        break;
+                    default:
+                        return await articleDao.update({articleid:reqEntity.articleid}, updateStatment).catch(err =>{
+                            log.error("default unable to update article failed, err: " + err);
+                            throw 'unable to update article';
+                        })
+                        break;
+                }
+            }else{
+                return await articleDao.update({articleid:reqEntity.articleid},updateStatment).catch(err =>{
+                    log.error("update article failed, err: " + err);
+                    throw 'update article failed';
+                });
+            }
+        }else{
+            //保存为自己
+            reqEntity.articleid = uuid.createUUID();
+            reqEntity.ownerip = req.ip;
+            delete reqEntity._id;
+            return await articleDao.insert(reqEntity).catch(err =>{
+                log.error("save as ipArticle failed, err: " + err);
+                throw err;
+            })
+        }
+
+
+    }
+
+
+
+
+
+
+}
+
+// 4部分用户不可读
+// 5仅自己可读
+//6部分用户不可修改
+// 1 所有人可读可修改
+// 2 部分用户仅可读
+// 3 部分用户可修改
+
+
 
 // function getShareArticle(req,res) {
 //     var bodyentity = JSON.parse(JSON.stringify(req.body));
@@ -398,8 +573,9 @@ async function updateArticle(req) {
 
 module.exports ={
     getArticles,
-    getShareArticle,
-    insertArticle,
-    updateArticle
+    updateArticle,
+    deleteArticle,
+    getArticleById,
+    saveAsPDF
 
 }

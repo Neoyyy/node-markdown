@@ -10,7 +10,7 @@ function insert(stateMent){
                 reject(err);
             }else{
                 log.info("create article success:" + doc);
-                resolve(doc);
+                resolve(stateMent.articleid);
             }
 
         })
@@ -34,8 +34,9 @@ function del(stateMent) {
 }
 
 function getOne(stateMent) {
+    log.info("get article,condition:" + JSON.stringify(stateMent));
+
     var promise = new Promise(function (resolve, reject) {
-        log.info("get article,condition:" + JSON.stringify(statements));
         article.findOne(stateMent,function (err,doc) {
             if (err){
                 log.error("get article failed:" + err);
@@ -56,17 +57,17 @@ function getOne(stateMent) {
 
 function getDocs(stateMent) {
     var promise = new Promise(function (resolve, reject) {
-        log.info("get article,condition:" + JSON.stringify(statements));
-        article.findOne(stateMent,function (err,docs) {
+        log.info("get article,condition:" + JSON.stringify(stateMent));
+        article.find(stateMent,function (err,docs) {
             if (err){
-                log.error("get article failed:" + err);
+                log.error("1 get article failed:" + err);
                 reject(err);
             }else{
                 if (docs != null && JSON.stringify(docs).length >0){
                     log.info("the article:" + JSON.stringify(docs));
                     resolve(docs);
                 }else{
-                    log.error("get article failed");
+                    log.error("get article failed,no articles");
                     reject();
                 }
             }
@@ -85,7 +86,7 @@ function update(stateMent, newEntity) {
                 reject(err);
             }else{
                 log.info("update article success");
-                resolve(doc);
+                resolve(stateMent.articleid);
             }
 
         })

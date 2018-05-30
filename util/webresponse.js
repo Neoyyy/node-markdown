@@ -1,4 +1,4 @@
-function createResult(code, msg, data){
+function commonResponse(code, msg, data){
 	let result = {
 		code : code,
 		msg : msg,
@@ -8,4 +8,4 @@ function createResult(code, msg, data){
 }
 
 
-exports.createResult = createResult;
+exports.commonResponse = commonResponse;

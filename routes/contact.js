@@ -1,34 +1,22 @@
 var express = require("express");
 var router = express.Router();
-
-router.route("/contact/getContactList")
+var userService = require('../service/Userservice')
+var resUtils = require('../util/webresponse')
+router.route("/user/addNewFriend")
     .post(function (req,res) {
-        
+        userService.addFriend(req).then(data =>{
+            res.send(resUtils.commonResponse(200,'add friend success',data));
+        }).catch(err =>{
+            res.send(resUtils.commonResponse(300,'add friend failed', err));
+        })
     });
 
-router.route("/contact/addContact/:contactId")
-    .post(function (req,res) {
-
-    });
-
-router.route("/contact/deleteContact/:contactId")
-    .post(function (req,res) {
-
-    });
-
-router.route("/sortContact")
-    .post(function (req, res) {
-        
-    });
-
-router.route("/contact/joinGroup")
-    .post(function (req, res) {
-        
-    });
-
-router.route("/leaveGroup")
-    .post(function (req, res) {
-        
-    });
-
+// router.route("/user/deleteFriend")
+//     .post(function (req, res) {
+//         userService.deleteFriend(req).then(data =>{
+//             res.send(resUtils.commonResponse(200,'delete friend success',data));
+//         }).catch(err=>{
+//             res.send(resUtils.commonResponse(300,'delete friend failed',err));
+//         })
+//     })
 module.exports = router;

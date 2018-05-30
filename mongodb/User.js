@@ -10,6 +10,9 @@ var userSchema = new Schema({
       ,avatar:String//头像
       ,email:String//注册邮件
       ,password:String//密码
+        ,status: String //在线状态 online：在线、hide：隐身
+        ,sign: String //我的签名
+        ,avatar: String //我的头像
     }
 
     ,friend:[{
@@ -17,17 +20,12 @@ var userSchema = new Schema({
         ,id:String//分组id
         ,list:[{
             username:String//好友昵称
+            ,email:String
             ,id:String//好友id
             ,avatar:String//好友头像
             ,sign:String//签名
 
         }]
-        ,group:[{
-            groupname:String//群组名称
-            ,id:String//群组id
-            ,avatar:String//群组头像
-        }]
-
     }]
 });
 

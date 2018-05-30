@@ -3,15 +3,15 @@ var userDao = require('../dao/userDao');
 var responseutil = require('../util/webresponse');
 var uuid = require("../util/uuid")
 
-async function register(req) {
-    var reqEntity = JSON.parse(JSON.stringify(req.body))
+async function register(reqEntity) {
     log.info("user register:" + reqEntity.email);
-    var user = await userDao.get({email:reqEntity.email}).catch(err =>{
+    var user = await userDao.getForRegister({"mine.email":reqEntity.email}).catch(err =>{
         log.error("register err: " + err);
         throw 'register user failed';
     });
     if (user == undefined || JSON.stringify(user).length <= 0){
-        return userDao.insert(reqEntity).catch(err =>{
+        reqEntity.id = uuid.createUUID();
+        return userDao.insert({mine:reqEntity}).catch(err =>{
             log.error("register err: " + err);
             throw 'register user failed'
         })
@@ -21,29 +21,112 @@ async function register(req) {
     }
 }
 
-async function login(req) {
-    var reqEntity = JSON.parse(JSON.stringify(req.body))
-    log.info("user login:" + reqEntity.email);
-    var user = await userDao.get({email:reqEntity.email}).catch(err =>{
+
+async function login(reqEntity) {
+    log.info("user login1:" + reqEntity.email);
+    var user = await userDao.get({"mine.email":reqEntity.email}).catch(err =>{
         log.error("can't get user info for login check, err: " + err);
         throw 'can\'t login';
     });
+    log.info("22222user " + JSON.stringify(user.mine) + " login");
+    log.info("22222user " + typeof user.mine + " login");
+
     if (user != undefined && JSON.stringify(user).length > 0){
-        if (user.password == reqEntity.password){
-            log.info("user " + reqEntity.email + " login");
-            return user;
+        log.info("3333user " + user.mine.password + " login");
+        log.info("3333logon " + reqEntity.password + " login");
+        var userInfo = user.mine
+        if (userInfo.password == reqEntity.password){
+            log.info("111111  login");
+
+            log.info("111111user " + reqEntity.email + " login");
+                log.info(user)
+                return user;
+            }else{
+            log.error("password wrong")
+            throw 'password wrong';
         }
-    }else{
-        log.error("user not exist, can't login");
-        throw 'user not exist';
+        }else{
+            log.error("user not exist, can't login");
+            throw 'user not exist';
+        }
+
+
+}
+
+
+async function addFriend(reqEntity) {
+
+    log.info("add new friend: " + JSON.stringify(reqEntity))
+    var user = await userDao.get({"mine.email":reqEntity.myemail}).catch(err =>{
+        log.error("can't find user, err: " + err);
+        throw 'can\'t find user';
+    })
+    var friendDetail = await userDao.get({"mine.email":reqEntity.friendemail}).catch(err =>{
+        log.error("can't find user, err: " + err);
+        throw 'can\'t find user';
+    })
+    log.info("the user : " + JSON.stringify(user))
+    var friendList = user.friend;
+    var flag = 0;
+    for(var j = 0;j<friendList.length;j++){
+        if (reqEntity.groupid == friendList[j].groupname){
+            flag = 1;
+            log.info("fin the froup");
+            friendList[j].list.push(friendDetail.mine)
+
+        }
     }
+    if (flag == 0){
+        friendList.push({
+            "groupname":reqEntity.groupid
+            ,"id": uuid.createUUID()
+            ,"list": [friendDetail.mine]
+        })
+    }
+
+    log.info("处理完了 "+JSON.stringify(friendList))
+    return await userDao.update({'mine.email':reqEntity.myemail},{$set : { friend : friendList }}).catch(err=>{
+        throw err;
+    })
+
+
+}
+async function changeUserName(reqEntity) {
+
+    return await userDao.update({'mine.email':reqEntity.email},{$set : { 'mine.username' : reqEntity.userName }}).catch(err=>{
+        throw err;
+    })
 }
 
-async function addFriend(req) {
 
-}
+async function deleteFriend(reqEntity) {
 
-async function deleteFriend(req) {
+    var user = await userDao.get({'mine.email':reqEntity.myemail}).catch(err=>{
+        throw err;
+    });
+    var friendList = user.friend;
+    log.info("处理前" + JSON.stringify(friendList))
+    for(var j = 0;j<friendList.length;j++){
+        if (reqEntity.groupid == friendList[j].groupname){
+            log.info("fin the froup");
+            log.info("the " + j + "group");
+            log.info(friendList[j])
+            for(var i = 0;i<friendList[j].list.length;i++){
+                log.info(friendList[j].list[i])
+                var aaa = JSON.parse(JSON.stringify(friendList[j].list[i]));
+                log.info("the aaa is: " + aaa);
+                if (reqEntity.friendemail == aaa.email){
+                    log.info("find user")
+                    friendList[j].list.splice(i,1);
+                }
+            }
+        }
+    }
+
+    log.info("处理完了 "+JSON.stringify(friendList))
+    return await userDao.update({'mine.email':reqEntity.myemail},{$set : { friend : friendList }}).catch(err=>{
+        throw err;
+    })
 
 }
 
@@ -118,11 +201,12 @@ async function deleteFriend(req) {
 //
 //     })
 //
-// }
+// }√
 
 module.exports ={
     login,
     register,
     addFriend,
-    deleteFriend
+    deleteFriend,
+    changeUserName
 };

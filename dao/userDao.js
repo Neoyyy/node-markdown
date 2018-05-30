@@ -24,6 +24,7 @@ function get(stateMent) {
                 reject(err);
             }else{
                 if (doc != null && JSON.stringify(doc).length>0){
+                    log.info("find user:" + JSON.stringify(doc))
                     resolve(doc);
                 }else{
                     log.error("not find user");
@@ -34,6 +35,24 @@ function get(stateMent) {
     });
     return promise;
 }
+
+function getForRegister(stateMent) {
+    var promise = new Promise(function (resolve, reject) {
+        user.findOne(stateMent,function (err,doc) {
+            if (err){
+                log.error("get user failed:" + err);
+                reject(err);
+            }else{
+                    log.info("find user:" + JSON.stringify(doc))
+                    resolve(doc);
+
+
+            }
+        })
+    });
+    return promise;
+}
+
 
 function del(stateMent) {
     var promise = new Promise(function (resolve, reject) {
@@ -51,6 +70,7 @@ function del(stateMent) {
 
 //todo 未测
 function update(stateMent, newEnticy) {
+    log.info("update state: " + JSON.stringify(newEnticy))
     var promise = new Promise(function (resolve, reject) {
         user.update(stateMent, newEnticy, function (err,doc) {
             if (err){
@@ -70,6 +90,7 @@ module.exports = {
     update,
     del,
     get,
-    insert
+    insert,
+    getForRegister
 
 }

@@ -9,10 +9,8 @@ var articleSchema = new Schema({
     ,owneremail:String
     ,content:String
     ,time:String
-    ,permissiontype:String//文章权限标识
-    ,authuserlist:[{
-        userid:String
-    }]//被分配权限的用户列表
+    ,authtype:String//文章权限标识
+    ,userlist:[]//被分配权限的用户列表
 
 
 });
